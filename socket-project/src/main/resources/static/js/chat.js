@@ -1,13 +1,18 @@
 var stompClient = null;
 
 function setConnected(connected) {
-    $("#connect").prop("disabled", connected); //將id = connect 按鈕屬性改為disabled
-    $("#disconnect").prop("disabled", !connected);  //將id = disconnect 按鈕屬性改為disabled
+    //$("#connect").prop("disabled", connected); //將id = connect 按鈕屬性改為disabled
+    //$("#disconnect").prop("disabled", !connected);  //將id = disconnect 按鈕屬性改為disabled
+    console.log("connected="+connected)
     if (connected) {
         $("#conversation").show();  //當連接上Websocket id = conversation 顯示
+        $("#connect").css("background","blue");
+        $("#disconnect").css("background","");
     }
     else {
         $("#conversation").hide(); // 將 conversation隱藏
+        $("#connect").css("background","");
+        $("#disconnect").css("background","red");
     }
     $("#chatRoom").html(""); //將chatRoom內容清空
 }
@@ -16,6 +21,7 @@ function connect() {
     var socket = new SockJS('/endpointChatRoom'); //建立一個socket物件 名稱為:/endpointChatRoom
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
+		console.log('connect() > setConnected(true)')
         setConnected(true);
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/getResponse', function (response) {
@@ -23,6 +29,7 @@ function connect() {
             showConversation(JSON.parse(response.body).responseMessage); //
         });
     });
+
 }
 
 //關閉WebSocket方法
@@ -47,6 +54,7 @@ function showConversation(responseMessage) {
 }
 
 $(function () {
+
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
